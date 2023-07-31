@@ -7,7 +7,6 @@ import pandas as pd
 import re
 import os
 
-#api_key="1i6DSZ6-#wmcUmsMJymgNVA7Y1JwjcP2ghIAmUbBgsqskfGbF0zIqdJzIN66X5ZITB4oQbAfxFnSxHNPWy29mZOJo3tOXgC_u3arY2AARZjpAM3GY941vTnBb#lBGaZHYx"
 search_path = 'https://api.yelp.com/v3/businesses/search'
 urlyelp="https://www.yelp.com/biz/"
 urlyelp_photo="https://www.yelp.com/biz_photos/"
