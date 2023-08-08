@@ -1,6 +1,6 @@
 from fuzzywuzzy import fuzz
 import spacy
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
 
 def fuzzselect(dishname,review):
     test=fuzz.token_set_ratio(dishname,review)>90 or fuzz.partial_ratio(dishname,review)>90
