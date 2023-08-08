@@ -41,6 +41,9 @@ if restaurant and location:
     df_photo=df_photo.drop(df_photo[df_photo.caption=='California burrito!'].index)
     df_review=absaExtract.to_sents(alias,df_review)
     df_extract=absaExtract.extract_rev(alias,df_review)
+    if df_extract.empty:
+        result.error('Oh no! pyabsa package crashed! Please close and reload the page.')
+        st.stop()
     done="Done! got data of {} at {}.Please type the dish name on the left.".format(name,address)
     result.success(done)
     noshowdish=False
