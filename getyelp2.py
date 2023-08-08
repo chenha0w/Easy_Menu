@@ -7,12 +7,18 @@ import pandas as pd
 import re
 import os
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 search_path = 'https://api.yelp.com/v3/businesses/search'
 urlyelp="https://www.yelp.com/biz/"
 urlyelp_photo="https://www.yelp.com/biz_photos/"
 session=FuturesSession(max_workers=5)
 
-@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:args[0]+'_at_'+args[1]+'.pkl')
+
+#@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:args[0]+'_at_'+args[1]+'.pkl')
+@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'_at_'+args[1]+'.pkl')
 def search(restaurant_name, location='US', return_nums=10):
     api_key=os.getenv('YELP_API_KEY')
     headers = {'Authorization': f"Bearer {api_key}"}
@@ -23,13 +29,16 @@ def search(restaurant_name, location='US', return_nums=10):
 def get_rest_info(restaurant_name, location='US'):
     businesses=search(restaurant_name,location)
     name=businesses[0].get('name')
+    alias=businesses[0].get('alias')
+    review_num=businesses[0].get('review_count')
     address=', '.join(businesses[0].get('location').get('display_address'))
     category=[]
     for x in businesses[0].get('categories'):
         category.append(x['alias'])
-    return name, address, category
+    return name, address, category, alias, review_num
 
-@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:args[0]+'-'+str(args[1])+'.pkl')
+#@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:args[0]+'-#'+str(args[1])+'.pkl')
+@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'-'+str(args[1])+'.pkl')
 def get_page(alias,offset):
     urlrest = urlyelp+alias
     pagehtml = session.get(urlrest, params={'start':offset})
@@ -39,11 +48,11 @@ def scrape_review(alias,offset,review_dict):
     tries=0
     urlrest = urlyelp+alias
     pagehtml = session.get(urlrest, params={'start':offset})
-    soup = BeautifulSoup(pagehtml.result().text,features='lxml')  
+    soup = BeautifulSoup(pagehtml.result().text)  
     review_block = soup.find('section',attrs={'aria-label':"Recommended Reviews"})
     while not review_block:
         pagehtml = session.get(urlrest, params={'start':offset})
-        soup = BeautifulSoup(pagehtml.result().text,features='lxml')
+        soup = BeautifulSoup(pagehtml.result().text)
         review_block = soup.find('section',attrs={'aria-label':"Recommended Reviews"})
         tries+=1
         if tries>10:
@@ -72,7 +81,8 @@ def scrape_review(alias,offset,review_dict):
         n_photo=int(re.findall('[0-9]+',photo_t)[0])
         return n_photo
 
-@checkpoint(work_dir='cache',key=lambda args, kwargs:args[0]+'-photo-'+str(args[1])+'.pkl')
+#@checkpoint(work_dir='r/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:args[0]+'-#photo-'+str(args[1])+'.pkl')
+@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'-photo-'+str(args[1])+'.pkl')
 def get_photo_page(alias,offset=0):
     urlrest=urlyelp_photo+alias
     pagehtml=session.get(urlrest, params={'start':offset})
@@ -81,11 +91,11 @@ def get_photo_page(alias,offset=0):
 def scrape_photo(alias,offset,photo_dict):
     urlrest=urlyelp_photo+alias
     pagehtml=session.get(urlrest, params={'start':offset})
-    soup=BeautifulSoup(pagehtml.result().text,features='lxml')
+    soup=BeautifulSoup(pagehtml.result().text)
     imgblock=soup.find('div',attrs={'class':"media-landing_gallery photos"})
     while not imgblock:
         pagehtml = session.get(urlrest, params={'start':offset})
-        soup = BeautifulSoup(pagehtml.result().text,features='lxml')
+        soup = BeautifulSoup(pagehtml.result().text)
         imgblock=soup.find('div',attrs={'class':"media-landing_gallery photos"})
         tries+=1
         if tries>10:
@@ -96,11 +106,9 @@ def scrape_photo(alias,offset,photo_dict):
             photo_dict['caption'].append(caption[0].strip())
             photo_dict['imglink'].append(block.get('src'))
 
-@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:'export_'+args[0]+'_at_'+args[1]+'.pkl')
-def export_df(name,location):    
-    businesses=search(name,location)
-    alias=businesses[0].get('alias')
-    review_num=businesses[0].get('review_count')
+#@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:'export_'+args[0]+'_at_'+args[1]+'.pkl')
+@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'export_'+args[0]+'.pkl')
+def export_df(alias,review_num):    
     review_dict=defaultdict(list)
     photo_dict=defaultdict(list)
     for offset in range(0,review_num,10):
@@ -112,8 +120,6 @@ def export_df(name,location):
         scrape_photo(alias,offset,photo_dict)    
     df_review=pd.DataFrame(review_dict)
     df_photo=pd.DataFrame(photo_dict)
-    rev_clean(df_review)
+    df_review['review']=df_review['review'].str.replace('\xa0', '')
     return df_review,df_photo
 
-def rev_clean(df_review):
-    df_review['review']=df_review['review'].str.replace('\xa0', '')

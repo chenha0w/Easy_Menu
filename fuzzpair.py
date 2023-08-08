@@ -38,7 +38,7 @@ def rank_photo(dishname,df_photo):
     
 
 def get_photo(dishname,df_photo):
-    candidates=df_photo[df_photo.caption.apply(lambda x:fuzzselect(dishname,x))]
+    candidates=df_photo[df_photo.caption.apply(lambda x:fuzz.partial_ratio(dishname,x)>90)]
     return candidates
 
 def select_photo(dishname,df_photo):
