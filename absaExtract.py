@@ -41,7 +41,7 @@ def extract_rev(alias,review):
     for index,row in review.iterrows():
         doc=nlp(row.review)
         for sentence in doc.sents:
-            prediction=triplet_extractor.predict(sentence.text,ignore_error=False)
+            prediction=triplet_extractor.predict(sentence.text)
             extract=prediction.get('Triplets')
             if isinstance(extract,list):
                 for i in range(0,len(extract)):

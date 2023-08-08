@@ -7,10 +7,7 @@ import pandas as pd
 import re
 import os
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 search_path = 'https://api.yelp.com/v3/businesses/search'
 urlyelp="https://www.yelp.com/biz/"
 urlyelp_photo="https://www.yelp.com/biz_photos/"
