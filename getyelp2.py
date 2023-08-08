@@ -15,7 +15,7 @@ session=FuturesSession(max_workers=5)
 
 
 #@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:args[0]+'_at_'+args[1]+'.pkl')
-@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'_at_'+args[1]+'.pkl')
+#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'_at_'+args[1]+'.pkl')
 def search(restaurant_name, location='US', return_nums=10):
     api_key=os.getenv('YELP_API_KEY')
     headers = {'Authorization': f"Bearer {api_key}"}
@@ -35,7 +35,7 @@ def get_rest_info(restaurant_name, location='US'):
     return name, address, category, alias, review_num
 
 #@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:args[0]+'-#'+str(args[1])+'.pkl')
-@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'-'+str(args[1])+'.pkl')
+#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'-'+str(args[1])+'.pkl')
 def get_page(alias,offset):
     urlrest = urlyelp+alias
     pagehtml = session.get(urlrest, params={'start':offset})
@@ -79,7 +79,7 @@ def scrape_review(alias,offset,review_dict):
         return n_photo
 
 #@checkpoint(work_dir='r/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, kwargs:args[0]+'-#photo-'+str(args[1])+'.pkl')
-@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'-photo-'+str(args[1])+'.pkl')
+#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'-photo-'+str(args[1])+'.pkl')
 def get_photo_page(alias,offset=0):
     urlrest=urlyelp_photo+alias
     pagehtml=session.get(urlrest, params={'start':offset})
@@ -104,7 +104,7 @@ def scrape_photo(alias,offset,photo_dict):
             photo_dict['imglink'].append(block.get('src'))
 
 #@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:'export_'+args[0]+'_at_'+args[1]+'.pkl')
-@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'export_'+args[0]+'.pkl')
+#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'export_'+args[0]+'.pkl')
 def export_df(alias,review_num):    
     review_dict=defaultdict(list)
     photo_dict=defaultdict(list)
