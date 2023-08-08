@@ -8,7 +8,7 @@ import absaExtract
 from PIL import Image
 
 st.set_page_config(layout="wide", page_title="Easy Menu")
-st.markdown('# Easy Menu :burrito: :sushi: :pizza: :curry:')
+st.markdown('# Easy Menu :burrito: :curry:')
 st.markdown('## :wave: your ordering assistant :wave:')
 st.markdown("## &emsp; _—learn more about a dish with pictures, wordclouds and reviews_")
 st.markdown("##")

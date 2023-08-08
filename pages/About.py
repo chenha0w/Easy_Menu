@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.markdown('# Easy Menu :burrito: :sushi: :pizza: :curry:')
+st.markdown('# Easy Menu :burrito: :curry:')
 st.markdown('## :wave: your ordering assistant :wave:')
 st.markdown("## &emsp; _—learn more about a dish with pictures, wordclouds and reviews_")
 st.markdown('#')
