@@ -20,7 +20,7 @@ def rev_clean(review):
     review['review']=review['review'].str.replace("'re", ' are')
     review['review']=review['review'].str.replace("'m", ' am')
 
-#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'clean_rev_of_'+args[0]+'.pkl')
+@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'clean_rev_of_'+args[0]+'.pkl')
 def to_sents(alias,review):
     rev_clean(review)
     review['sentences']=['']*len(review)
@@ -32,7 +32,7 @@ def to_sents(alias,review):
         review.at[index,'sentences']=sentences
     return review
 
-#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'extract_aspect_of_'+args[0]+'.pkl')
+@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'extract_aspect_of_'+args[0]+'.pkl')
 def extract_rev(alias,review):
 #    rev_clean(review)
 #    review['sentences']=review.review.apply(to_sents)
