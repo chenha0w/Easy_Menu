@@ -160,7 +160,7 @@ pytorch-lightning==1.4.2
 pytorch-warmup==0.1.1
 pytz==2023.3
 PyWavelets==1.4.1
-pywin32==306
+pywin32
 pywinpty==2.0.11
 PyYAML==6.0.1
 pyzmq==25.1.0
