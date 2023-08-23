@@ -96,8 +96,6 @@ jupyterlab_server==2.24.0
 kiwisolver==1.4.4
 kornia==0.6.0
 langcodes==3.3.0
-# Editable install with no version control (latent-diffusion==0.0.1)
--e c:\users\daniel\pycharmprojects\ldm
 lazy_loader==0.2
 Levenshtein==0.21.1
 lxml==4.9.3
