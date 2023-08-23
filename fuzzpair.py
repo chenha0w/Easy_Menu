@@ -1,6 +1,11 @@
 from fuzzywuzzy import fuzz
-import spacy
-nlp = spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
+import streamlit as st
+
+@st.cache_resource
+def load_spacy():
+    import spacy
+    return spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
+
 
 def fuzzselect(dishname,review):
     test=fuzz.token_set_ratio(dishname,review)>90 or fuzz.partial_ratio(dishname,review)>90
@@ -9,6 +14,7 @@ def fuzzselect(dishname,review):
     return test
 
 def fuzz_check_rev(dishname,review):
+    nlp = load_spacy()
     doc=nlp(review)
     prev=''
     test=False
@@ -21,6 +27,7 @@ def fuzz_check_rev(dishname,review):
     return test
 
 def rev_print(dishname,review):
+    nlp = load_spacy()
     doc=nlp(review)
     prev=0
     for x in doc.sents:

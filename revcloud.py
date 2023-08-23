@@ -3,12 +3,15 @@ import matplotlib.pyplot as plt
 from fuzzywuzzy import fuzz
 import numpy as np
 from spacy.lang.en.stop_words import STOP_WORDS
-import spacy
 import math
+import streamlit as st
 
-
-nlp = spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
 nondishlist=['service','staff','bathroom','parking','decor']
+
+@st.cache_resource
+def load_spacy():
+    import spacy
+    return spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
 
 def common_stop(movein=set(),moveout=set()):
     keep={'empty','many','any','amount','full','enough','various','several','more','least','most','down','few','over','under'}.union(moveout)
@@ -148,6 +151,7 @@ def show_keyword(wc_pos,wc_neg,dish,dishreview,df_extract):
     return keyword[:min(6,len(keyword))],examples[:min(6,len(examples))]
 
 def clean_tag(review):
+    nlp = load_spacy()
     doc=nlp(review)
     cleaned_rev=[token.text for token in doc if token.tag_ in ['NN','JJ','JJR','NNP','RB']]
     return ' '.join(cleaned_rev)
@@ -209,6 +213,7 @@ def build2cloud(name,address,category,dish,dishreview):
     return fig,wc_pos,wc_neg
 
 def show_rev(wc_pos,wc_neg,dish,dishreview):
+    nlp = load_spacy()
     rev_show=[]
     sort_word=[]
     neg_word=list(wc_neg.words_)[:5]

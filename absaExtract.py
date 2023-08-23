@@ -1,11 +1,18 @@
-import spacy
-from ediblepickle import checkpoint
-from pyabsa import AspectSentimentTripletExtraction as ASTE
+#from ediblepickle import checkpoint
 import string
 from collections import defaultdict
 import pandas as pd
+import streamlit as st
 
-nlp = spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
+@st.cache_resource
+def load_absa():
+    from pyabsa import AspectSentimentTripletExtraction as ASTE
+    return ASTE.AspectSentimentTripletExtractor(checkpoint="english")
+
+@st.cache_resource
+def load_spacy():
+    import spacy
+    return spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
 
 
 def rev_clean(review):
@@ -20,8 +27,10 @@ def rev_clean(review):
     review['review']=review['review'].str.replace("'re", ' are')
     review['review']=review['review'].str.replace("'m", ' am')
 
-@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'clean_rev_of_'+args[0]+'.pkl')
+#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'clean_rev_of_'+args[0]+'.pkl')
+@st.cache_data(max_entries=100,persist=True)
 def to_sents(alias,review):
+    nlp = load_spacy()
     rev_clean(review)
     review['sentences']=['']*len(review)
     for index,row in review.iterrows():   
@@ -32,11 +41,13 @@ def to_sents(alias,review):
         review.at[index,'sentences']=sentences
     return review
 
-@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'extract_aspect_of_'+args[0]+'.pkl')
+#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'extract_aspect_of_'+args[0]+'.pkl')
+@st.cache_data(max_entries=100,persist=True)
 def extract_rev(alias,review):
 #    rev_clean(review)
 #    review['sentences']=review.review.apply(to_sents)
-    triplet_extractor = ASTE.AspectSentimentTripletExtractor(checkpoint="english")
+    triplet_extractor = load_absa()
+    nlp = load_spacy()
     dish_extract=defaultdict(list)
     for index,row in review.iterrows():
         doc=nlp(row.review)
@@ -53,4 +64,6 @@ def extract_rev(alias,review):
                     dish_extract['opinion'].append(opinion)
                     dish_extract['phrase'].append(' '.join([opinion.strip(string.punctuation),aspect.strip(string.punctuation)]))
                     dish_extract['polarity'].append(extract[i].get('Polarity'))
+    if not dish_extract:
+        raise ImportError("pyabsa package crashed! Please close and reload the page. ")
     return pd.DataFrame(dish_extract)

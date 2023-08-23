@@ -38,7 +38,6 @@ if restaurant and location:
     wait="Fetching data of {} at {} for you...".format(name,address)
     result.info(wait)
     df_review,df_photo=getyelp2.export_df(alias, review_num)
-    df_photo=df_photo.drop(df_photo[df_photo.caption=='California burrito!'].index)
     df_review=absaExtract.to_sents(alias,df_review)
     df_extract=absaExtract.extract_rev(alias,df_review)
     if df_extract.empty:
