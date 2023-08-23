@@ -23,7 +23,6 @@ blis==0.7.10
 boostaug==2.3.5
 cachetools==5.3.0
 catalogue==2.0.9
-certifi @ file:///C:/b/abs_36eb5mzhph/croot/certifi_1690232276943/work/certifi
 cffi==1.15.1
 charset-normalizer==3.2.0
 click==8.1.3
