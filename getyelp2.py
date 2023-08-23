@@ -21,6 +21,8 @@ def search(restaurant_name, location='US', return_nums=10):
     headers = {'Authorization': f"Bearer {api_key}"}
     search_param={'term':restaurant_name, 'location':location, 'limit':return_nums}
     businesses=requests.get(search_path, headers=headers, params=search_param).json().get('businesses')
+    if not businesses:
+        raise RuntimeError("Current YELP API KEY hit the rate limit or expired. Try another day or contact develpers")
     return businesses
 
 def get_rest_info(restaurant_name, location='US'):
