@@ -4,8 +4,46 @@ import numpy as np
 import getyelp2
 import fuzzpair
 import revcloud
-import absaExtract
-from PIL import Image
+import string
+from collections import defaultdict
+import os
+
+
+@st.cache_resource
+def load_absa():
+    from pyabsa import AspectSentimentTripletExtraction as ASTE
+    return ASTE.AspectSentimentTripletExtractor(checkpoint="english")
+
+
+
+def extract_rev(alias,review):
+    save_file=os.path.join('.\cache', 'extract_aspect_of_'+alias+'.pkl')
+    if os.path.exists(save_file):
+        return pd.read_pickle(save_file)
+            
+    triplet_extractor = load_absa()
+    dish_extract=defaultdict(list)
+    for index,row in review.iterrows():
+        for sentence in row.sentences:
+            prediction=triplet_extractor.predict(sentence)
+            extract=prediction.get('Triplets')
+            if isinstance(extract,list):
+                for i in range(0,len(extract)):
+                    dish_extract['rev_index'].append(index)
+                    dish_extract['sents'].append(prediction.get('sentence'))
+                    aspect=extract[i].get('Aspect')
+                    opinion=extract[i].get('Opinion')
+                    dish_extract['aspect'].append(aspect)
+                    dish_extract['opinion'].append(opinion)
+                    dish_extract['phrase'].append(' '.join([opinion.strip(string.punctuation),aspect.strip(string.punctuation)]))
+                    dish_extract['polarity'].append(extract[i].get('Polarity'))
+    if not dish_extract:
+        raise ImportError("pyabsa package crashed! Please close and reload the page. ")
+
+    df_extract=pd.DataFrame(dish_extract)
+    df_extract.to_pickle(save_file)
+        
+    return df_extract
 
 st.set_page_config(layout="wide", page_title="Easy Menu")
 st.markdown('# Easy Menu :burrito: :curry:')
@@ -38,8 +76,8 @@ if restaurant and location:
     wait="Fetching data of {} at {} for you...".format(name,address)
     result.info(wait)
     df_review,df_photo=getyelp2.export_df(alias, review_num)
-    df_review=absaExtract.to_sents(alias,df_review)
-    df_extract=absaExtract.extract_rev(alias,df_review)
+    #df_review=absaExtract.to_sents(alias,df_review)
+    df_extract=extract_rev(alias,df_review)
     if df_extract.empty:
         result.error('Oh no! pyabsa package crashed! Please close and reload the page.')
         st.stop()

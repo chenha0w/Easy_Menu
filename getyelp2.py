@@ -7,6 +7,7 @@ import pandas as pd
 import re
 import os
 import streamlit as st
+import pickle
 
 
 search_path = 'https://api.yelp.com/v3/businesses/search'
@@ -14,7 +15,11 @@ urlyelp="https://www.yelp.com/biz/"
 urlyelp_photo="https://www.yelp.com/biz_photos/"
 session=FuturesSession(max_workers=5)
 
-
+@st.cache_resource
+def load_spacy():
+    import spacy
+    return spacy.load("en_core_web_sm",disable = ['ner','lemmatizer','textcat'])
+    
 #@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:args[0]+'_at_'+args[1]+'.pkl')
 #@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'_at_'+args[1]+'.pkl')
 @st.cache_data(max_entries=1000,persist=True)
@@ -107,10 +112,31 @@ def scrape_photo(alias,offset,photo_dict):
             photo_dict['caption'].append(caption[0].strip())
             photo_dict['imglink'].append(block.get('src'))
 
-#@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:'export_'+args[0]+'_at_'+args[1]+'.pkl')
-#@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:'export_'+args[0]+'.pkl')
-@st.cache_data(max_entries=100,persist=True)
-def export_df(alias,review_num):    
+def rev_clean(reviews):
+    #reviews being series
+    clean_review=reviews.str.replace(r'(?<=[.,;!?])(?=[^\s.?!])', ' ',regex=True)
+    rep_dict={"can't": 'can not', "won't": 'will not', "shan't": 'shall not', "n't": ' not', "'s": ' is', "'ve": ' have', "'ll": ' will', "'re": ' are', "'m": ' am'}
+    for key,value in rep_dict.items():
+        clean_review=clean_review.str.replace(key,value)
+    return clean_review
+
+def to_sents(review):
+    #review is a str
+    nlp = load_spacy()
+    doc = nlp(review)
+    sentences = []
+    for sentence in doc.sents:
+        sentences.append(sentence.text)
+    return sentences
+
+
+def export_df(alias,review_num):
+    
+    save_file=os.path.join('.\cache', 'export_'+alias+'.pkl')
+    if os.path.exists(save_file):
+        with open(save_file,'rb') as f:
+            return pickle.load(f)
+            
     review_dict=defaultdict(list)
     photo_dict=defaultdict(list)
     for offset in range(0,review_num,10):
@@ -123,5 +149,12 @@ def export_df(alias,review_num):
     df_review=pd.DataFrame(review_dict)
     df_photo=pd.DataFrame(photo_dict)
     df_review['review']=df_review['review'].str.replace('\xa0', '')
+
+    clean_review=rev_clean(df_review.review)
+    df_review['sentences']=clean_review.apply(to_sents)
+    
+    with open(save_file,'wb') as f:
+        pickle.dump((df_review,df_photo),f)
+        
     return df_review,df_photo
 
