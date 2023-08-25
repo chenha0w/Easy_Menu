@@ -132,7 +132,7 @@ def to_sents(review):
 
 def export_df(alias,review_num):
     
-    save_file=os.path.join('.\cache', 'export_'+alias+'.pkl')
+    save_file=os.path.join('./cache', 'export_'+alias+'.pkl')
     if os.path.exists(save_file):
         with open(save_file,'rb') as f:
             return pickle.load(f)

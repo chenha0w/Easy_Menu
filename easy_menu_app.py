@@ -17,7 +17,7 @@ def load_absa():
 
 
 def extract_rev(alias,review):
-    save_file=os.path.join('.\cache', 'extract_aspect_of_'+alias+'.pkl')
+    save_file=os.path.join('./cache', 'extract_aspect_of_'+alias+'.pkl')
     if os.path.exists(save_file):
         return pd.read_pickle(save_file)
             
