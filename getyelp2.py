@@ -22,14 +22,20 @@ def load_spacy():
     
 #@checkpoint(work_dir=r'/Users/chenhaowu/Documents/pythoncode/dataincubator/cache',key=lambda args, #kwargs:args[0]+'_at_'+args[1]+'.pkl')
 #@checkpoint(work_dir=r'C:\Users\Daniel\PycharmProjects\asda_check\easy_menu\Easy_Menu\cache',key=lambda args, kwargs:args[0]+'_at_'+args[1]+'.pkl')
-@st.cache_data(max_entries=1000,persist=True)
+#@st.cache_data(max_entries=1000,persist=True)
 def search(restaurant_name, location='US', return_nums=10):
+    save_file=os.path.join('./cache', restaurant_name+'_at_'+location+'.pkl')
+    if os.path.exists(save_file):
+        with open(save_file,'rb') as f:
+            return pickle.load(f)
     api_key=os.getenv('YELP_API_KEY')
     headers = {'Authorization': f"Bearer {api_key}"}
     search_param={'term':restaurant_name, 'location':location, 'limit':return_nums}
     businesses=requests.get(search_path, headers=headers, params=search_param).json().get('businesses')
     if not businesses:
         raise ConnectionError("Current YELP API KEY hit the rate limit or expired. Try another day or contact develpers")
+    with open(save_file,'wb') as f:
+        pickle.dump(businesses,f)
     return businesses
 
 def get_rest_info(restaurant_name, location='US'):
