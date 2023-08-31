@@ -52,8 +52,8 @@ st.markdown("## &emsp; _—learn more about a dish with pictures, wordclouds and
 st.markdown("##")
 result=st.empty()
 with result.container():
-    st.info("Currently app only support searching restaurants shown in 'Available restaurant' page. Searching restaurants outside of the list may exceed memory limit.")
-    for n in range(1,10):
+    st.info("Currently app only support searching restaurants in Mira Mesa, San Diego area. See 'Available restaurants' page for details.")
+    for n in range(1,5):
         st.markdown("#")
 
 #with st.sidebar:
