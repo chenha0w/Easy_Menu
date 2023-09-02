@@ -67,9 +67,9 @@ with result.container():
 #if option=='Input manually':
 with st.sidebar:
     st.title('Restaurant Name')
-    restaurant=st.text_input("restaurant name", key="restaurant", placeholder="Sayulitas", label_visibility='collapsed')
+    restaurant=st.text_input("restaurant name", key="restaurant", placeholder="e.g., Sayulitas", label_visibility='collapsed')
     st.title('Location')
-    location=st.text_input("location", key="location", placeholder="Mira Mesa", label_visibility='collapsed')
+    location=st.text_input("location", key="location", placeholder="e.g., Mira Mesa", label_visibility='collapsed')
 noshowdish=True
 
 if restaurant and location:
@@ -87,7 +87,7 @@ if restaurant and location:
     noshowdish=False
 with st.sidebar:
     st.title('Please enter the dish name:')
-    dish=st.text_input("Please enter the dish name:", key="dish", disabled=noshowdish, placeholder="california burrito", label_visibility='collapsed')
+    dish=st.text_input("Please enter the dish name:", key="dish", disabled=noshowdish, placeholder="e.g., california burrito", label_visibility='collapsed')
 
 if dish:
     imglink=fuzzpair.select_photo(dish,df_photo)
